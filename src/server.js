@@ -3,11 +3,17 @@ import { db } from "./config/db.js";
 import { ENV } from "./config/env.js";
 import { favoriteTable } from "./db/schema.js";
 import { and, desc, eq } from "drizzle-orm";
+import job from "./config/cron.js";
 
 const app = express();
 app.use(express.json());
 const PORT = ENV.PORT || 5001;
 
+if (ENV.NODE_ENV === "production") job.start();
+
+app.get("/api/health", (req, res) => {
+  res.send("Welcome to the Recipe App API");
+});
 app.post("/api/favorites", async (req, res) => {
   try {
     const { userId, recipeId, title, image, cookTime, servings } = req.body;
